@@ -76,15 +76,16 @@ const CacheableImageComponent = (props, ref) => {
     const { isConnected } = useNetInfo();
     const imageProps = getImageProps(props);
     const managerOptions = getCacheManagerOptions(props);
-    const [mOptions, SetMOptions] = useState(managerOptions ?? {});
+    console.log(managerOptions);
+    const [mOptions, setMOptions] = useState(managerOptions ?? {});
     const cacheManager = useMemo(() => {
         console.log("New Instance");
         return new CacheManager(mOptions);
     }, [mOptions]);
     const { source: originSource } = props;
     useEffect(() => {
-        const changed = !_.isEqual(managerOptions, mOptions);
-        if (changed) SetMOptions(managerOptions);
+        //const changed = !_.isEqual(managerOptions, mOptions);
+        //if (changed) setMOptions(managerOptions);
     }, [managerOptions]);
     useEffect(() => {
         let isMounted = true;
