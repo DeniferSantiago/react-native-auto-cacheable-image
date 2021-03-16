@@ -31,19 +31,27 @@ function getDirPath(path) {
  * @param {String} path
  */
 async function ensurePath(path) {
+    console.log("Entry ensurePath");
     const dirPath = getDirPath(path);
     try {
         const isDir = await existF(dirPath);
         if (!isDir) {
+            console.log("Not Exist");
+            console.log(`dirPath: ${dirPath}`);
+            await mkdir(dirPath);
+            console.log("mkdir");
             // check if dir has indeed been created because
             // there's no exception on incorrect user-defined paths (?)...
-            await mkdir(dirPath);
             const exist = await existF(dirPath);
+            console.log("Not Exist2");
             if (!exist) {
                 throw new Error("Invalid cacheLocation");
             }
+            console.log("Exist2");
         }
+        console.log("Exist");
     } catch (err) {
+        console.log(err);
         const errorMessage = err.message.toLowerCase();
         // ignore folder already exists errors
         if (
@@ -55,6 +63,7 @@ async function ensurePath(path) {
         }
         throw err;
     }
+    console.log("Exit ensurePath");
 }
 /**
  * @param {String} basePath
