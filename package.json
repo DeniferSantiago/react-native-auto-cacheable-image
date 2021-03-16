@@ -1,0 +1,11 @@
+{
+  "name": "react-native-image-cacheable",
+  "version": "1.0.0",
+  "description": "Image component that automatically caches the image for later use, plus a cache manager is provided",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
