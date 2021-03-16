@@ -7,5 +7,21 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "peerDependencies": {
+    "@react-native-community/netinfo": "^5.9.6",
+    "react-native-fs": "^2.16.6"
+  },
+  "devDependencies": {
+    "@react-native-community/netinfo": "^5.9.6",
+    "eslint": "^7.22.0",
+    "react-native-fs": "^2.16.6",
+    "@react-native-community/eslint-config": "^2.0.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "lodash": "^4.17.21",
+    "react-native-async-storage-cache": "github:DeniferSantiago/react-native-async-storage-cache",
+    "url-parse": "^1.5.1"
+  }
 }
