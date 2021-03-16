@@ -100,35 +100,40 @@ export class WrapperFS {
             // create an active download for this file
             /**@returns {Promise<String>}*/
             activeDownloads[toFile] = async () => {
-                await ensurePath();
-                var totalSize = 0;
-                const { promise } = downloadF({
-                    toFile: tmpFile,
-                    fromUrl,
-                    headers,
-                    begin: val => (totalSize = val.contentLength)
-                });
-                const result = await promise;
-                if (result.statusCode === 304) {
+                try {
+                    await ensurePath();
+                    var totalSize = 0;
+                    const { promise } = downloadF({
+                        toFile: tmpFile,
+                        fromUrl,
+                        headers,
+                        begin: val => (totalSize = val.contentLength)
+                    });
+                    const result = await promise;
+                    if (result.statusCode === 304) {
+                        return toFile;
+                    }
+                    let status = Math.floor(result.statusCode / 100);
+                    if (status !== 2) {
+                        throw new Error(
+                            "Cannot download image, status code: " +
+                                result.statusCode
+                        );
+                    }
+                    const stats = await stat(tmpFile);
+                    if (totalSize !== stats.size) {
+                        throw new Error(
+                            "Download failed, the image could not be fully downloaded"
+                        );
+                    }
+                    await moveFile(tmpFile, toFile);
+                    WrapperFS.deleteFile(tmpFile);
+                    delete activeDownloads[toFile];
                     return toFile;
+                } catch (e) {
+                    console.log({ ...e, where: "WrapperFS: downloadFile" });
+                    throw e;
                 }
-                let status = Math.floor(result.statusCode / 100);
-                if (status !== 2) {
-                    throw new Error(
-                        "Cannot download image, status code: " +
-                            result.statusCode
-                    );
-                }
-                const stats = await stat(tmpFile);
-                if (totalSize !== stats.size) {
-                    throw new Error(
-                        "Download failed, the image could not be fully downloaded"
-                    );
-                }
-                await moveFile(tmpFile, toFile);
-                WrapperFS.deleteFile(tmpFile);
-                delete activeDownloads[toFile];
-                return toFile;
             };
         }
         return activeDownloads[toFile];

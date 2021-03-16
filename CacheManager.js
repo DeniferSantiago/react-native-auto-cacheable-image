@@ -55,6 +55,7 @@ async function cacheUrl(url, options, getCachedFile) {
             );
         }
     } catch (e) {
+        console.log({ ...e, where: "cacheUrl" });
         const fileRelativePath_1 = getImageRelativeFilePath(cacheableUrl);
         const filePath = `${options.cacheLocation}/${fileRelativePath_1}`;
         await WrapperFS.deleteFile(filePath);
