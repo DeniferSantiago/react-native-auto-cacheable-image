@@ -54,13 +54,10 @@ async function cacheUrl(url, options, getCachedFile) {
         } else {
             // console.log('ImageCacheManager: url cache hit', cacheableUrl);
             const cachedFilePath = `${options.cacheLocation}/${fileRelativePath}`;
-            console.log(`cachedFilePath: ${cachedFilePath}`);
             const exist = await WrapperFS.exists(cachedFilePath);
             if (exist) {
-                console.log("Exist");
                 return cachedFilePath;
             } else {
-                console.log("Not Exist");
                 return NewCache();
             }
         }

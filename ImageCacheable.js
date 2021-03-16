@@ -94,7 +94,6 @@ const ImageCacheableComponent = (props, ref) => {
                     setLastFetched(url);
                 }
             } catch (e) {
-                console.log({ ...e });
                 if (isMounted) {
                     setIsCacheable(false);
                     setCachedImagePath(null);

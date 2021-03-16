@@ -1,4 +1,4 @@
-import { has, initial, sumBy } from "lodash";
+import { has, initial, sumBy, flattenDeep } from "lodash";
 
 const {
     CachesDirectoryPath,
@@ -31,27 +31,19 @@ function getDirPath(path) {
  * @param {String} path
  */
 async function ensurePath(path) {
-    console.log("Entry ensurePath");
     const dirPath = getDirPath(path);
     try {
         const isDir = await existF(dirPath);
         if (!isDir) {
-            console.log("Not Exist");
-            console.log(`dirPath: ${dirPath}`);
             await mkdir(dirPath);
-            console.log("mkdir");
             // check if dir has indeed been created because
             // there's no exception on incorrect user-defined paths (?)...
             const exist = await existF(dirPath);
-            console.log("Not Exist2");
             if (!exist) {
                 throw new Error("Invalid cacheLocation");
             }
-            console.log("Exist2");
         }
-        console.log("Exist");
     } catch (err) {
-        console.log(err);
         const errorMessage = err.message.toLowerCase();
         // ignore folder already exists errors
         if (
@@ -63,7 +55,6 @@ async function ensurePath(path) {
         }
         throw err;
     }
-    console.log("Exit ensurePath");
 }
 /**
  * @param {String} basePath
@@ -102,7 +93,6 @@ export class WrapperFS {
      * @param {Object} headers   Object with headers to use when downloading the file
      */
     static downloadFile(fromUrl, toFile, headers) {
-        console.log("Entry");
         // use toFile as the key as is was created using the cacheKey
         if (!has(activeDownloads, toFile)) {
             // using a temporary file, if the download is accidentally interrupted, it will not produce a disabled file
@@ -111,7 +101,6 @@ export class WrapperFS {
             /**@returns {Promise<String>}*/
             activeDownloads[toFile] = async () => {
                 try {
-                    console.log("Entry Active Downloads");
                     await ensurePath(toFile);
                     const { promise } = downloadF({
                         toFile: tmpFile,
@@ -131,17 +120,14 @@ export class WrapperFS {
                     }
                     const stats = await stat(tmpFile);
                     if (result.bytesWritten !== stats.size) {
-                        console.log("Download failed");
                         throw new Error(
                             "Download failed, the image could not be fully downloaded"
                         );
                     }
                     await moveFile(tmpFile, toFile);
-                    console.log("moveFile");
                     delete activeDownloads[toFile];
                     return toFile;
                 } catch (e) {
-                    console.log({ ...e, where: "WrapperFS: downloadFile" });
                     throw e;
                 }
             };
@@ -196,7 +182,8 @@ export class WrapperFS {
     static async getDirInfo(dirPath) {
         const res = await stat(dirPath);
         if (res.isDirectory()) {
-            const files = await collectFilesInfo(dirPath);
+            const result = await collectFilesInfo(dirPath);
+            const files = flattenDeep(result);
             const size = sumBy(files, "size");
             return {
                 files,
