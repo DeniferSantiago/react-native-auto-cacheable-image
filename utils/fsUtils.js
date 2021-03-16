@@ -138,8 +138,6 @@ export class WrapperFS {
                     }
                     await moveFile(tmpFile, toFile);
                     console.log("moveFile");
-                    await WrapperFS.deleteFile(tmpFile);
-                    console.log("deleteFile");
                     delete activeDownloads[toFile];
                     return toFile;
                 } catch (e) {
