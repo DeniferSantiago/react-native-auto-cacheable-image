@@ -76,9 +76,10 @@ const CacheableImageComponent = (props, ref) => {
     const { isConnected } = useNetInfo();
     const imageProps = getImageProps(props);
     const managerOptions = getCacheManagerOptions(props);
-    const cacheManager = useMemo(() => new CacheManager(managerOptions), [
-        managerOptions
-    ]);
+    const cacheManager = useMemo(() => {
+        console.log("New Instance");
+        return new CacheManager(managerOptions);
+    }, [managerOptions]);
     const { source: originSource } = props;
     useEffect(() => {
         let isMounted = true;
@@ -114,7 +115,7 @@ const CacheableImageComponent = (props, ref) => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
         }
-        return <ImageBackground style={args.style} ref={ref} {...args} />;
+        return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
     };
     const renderLoader = () => {
         const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
@@ -169,6 +170,7 @@ const CacheableImageComponent = (props, ref) => {
         });
     };
     if (isCacheable && !cachedImagePath) {
+        console.log("Set Loader");
         return renderLoader();
     }
     const style = props.style ?? defaultStyles.image;
@@ -177,6 +179,7 @@ const CacheableImageComponent = (props, ref) => {
             ? { uri: AddPathPrefix(cachedImagePath) }
             : originSource;
     if (props.fallbackSource && !cachedImagePath) {
+        console.log("Set Fallback");
         return renderImage({
             ...props,
             key: `${props.key || source.uri}error`,
@@ -184,6 +187,7 @@ const CacheableImageComponent = (props, ref) => {
             source: props.fallbackSource
         });
     }
+    console.log("Set CachedImage");
     return renderImage({
         ...props,
         key: props.key ?? source.uri,
