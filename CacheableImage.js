@@ -84,7 +84,13 @@ const CacheableImageComponent = (props, ref) => {
     }, [mOptions]);
     const { source: originSource } = props;
     useEffect(() => {
-        //const changed = !_.isEqual(managerOptions, mOptions);
+        const changed = !_.isEqual(managerOptions, mOptions);
+        if (changed) {
+            console.log("start changed");
+            console.log(managerOptions);
+            console.log(mOptions);
+            console.log("end changed");
+        }
         //if (changed) setMOptions(managerOptions);
     }, [managerOptions]);
     useEffect(() => {
