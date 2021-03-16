@@ -3,7 +3,7 @@ import * as React from 'react'
 
 declare module "react-native-image-cacheable" {
   namespace ImageCacheable {
-    interface Image extends ReactNative.ImageBackground {
+    interface Image extends ReactNative.ImageBackgroundProps {
       /**
        * props for the ActivityIndicator that is shown while the image is downloaded.
        */
