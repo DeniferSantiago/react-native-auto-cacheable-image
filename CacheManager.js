@@ -39,7 +39,12 @@ async function cacheUrl(url, options, getCachedFile) {
     const cacheableUrl = getCacheableUrl(url, options.useQueryParamsInCacheKey);
     // note: urlCache may remove the entry if it expired so we need to remove the leftover file manually
     try {
-        const fileRelativePath = await MemoryCache.get(cacheableUrl);
+        var fileRelativePath;
+        try {
+            fileRelativePath = await MemoryCache.get(cacheableUrl);
+        } catch (e) {
+            console.log({ ...e, where: "cacheUrl:MemoryCache.get" });
+        }
         if (!fileRelativePath) {
             // console.log('ImageCacheManager: url cache miss', cacheableUrl);
             throw new Error("URL expired or not in cache");
