@@ -112,7 +112,7 @@ const CacheableImageComponent = (props, ref) => {
     }, [originSource, isConnected]);
     const renderImage = args => {
         if (_.isFunction(props.renderImage)) {
-            this.props.renderImage(args);
+            props.renderImage(args);
         }
         return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
     };
