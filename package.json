@@ -1,27 +1,28 @@
 {
-  "name": "react-native-cacheable-image",
+  "name": "react-native-auto-cacheable-image",
   "version": "1.0.0",
   "description": "Image component that automatically caches the image for later use, plus a cache manager is provided",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Denifer Santiago",
+  "license": "MIT",
+  "keywords": ["react native cache", "react native auto cache", "react native auto cacheable image", "cacheable image", "cache manager", "cache provider", "cached image"],
   "peerDependencies": {
-    "@react-native-community/netinfo": "^5.9.6",
+    "@react-native-community/netinfo": "^6.0.0",
     "react-native-fs": "^2.16.6"
   },
   "devDependencies": {
-    "@react-native-community/netinfo": "^5.9.6",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@react-native-community/netinfo": "^6.0.0",
     "eslint": "^7.22.0",
-    "react-native-fs": "^2.16.6",
-    "@react-native-community/eslint-config": "^2.0.0"
+    "react-native-fs": "^2.16.6"
   },
   "dependencies": {
     "crypto-js": "^4.0.0",
     "lodash": "^4.17.21",
-    "react-native-async-storage-cache": "github:DeniferSantiago/react-native-async-storage-cache",
+    "react-native-async-storage-cache": "^1.0.0",
     "url-parse": "^1.5.1"
   }
 }

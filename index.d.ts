@@ -1,7 +1,7 @@
 import * as ReactNative from "react-native";
 import * as React from "react"
 
-declare module "react-native-cacheable-image" {
+declare module "react-native-auto-cacheable-image" {
   namespace CacheableImage {
     interface Image extends ReactNative.ImageBackgroundProps {
       /**
@@ -74,7 +74,7 @@ declare module "react-native-cacheable-image" {
       isDirectory: () => boolean // Is the path a directory?
     }
 
-    interface PromiseCacheInfo {
+    interface CacheInfo {
       files: CacheStat[]
       size: number
     }
@@ -100,7 +100,7 @@ declare module "react-native-cacheable-image" {
       /**
        * Return info about the cache, list of files and the total size of the cache.
        */
-      getCacheInfo(options?: CacheOptions): Promise<PromiseCacheInfo>
+      getCacheInfo(options?: CacheOptions): Promise<CacheInfo>
       // LOCATION : {
       //   CACHE: string
       //   BUNDLE: string
