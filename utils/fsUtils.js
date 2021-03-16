@@ -148,7 +148,7 @@ export class WrapperFS {
                 }
             };
         }
-        return activeDownloads[toFile];
+        return activeDownloads[toFile]();
     }
     /**
      * remove the file in filePath if it exists.
