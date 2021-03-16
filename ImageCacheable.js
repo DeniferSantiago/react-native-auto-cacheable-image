@@ -61,9 +61,9 @@ const AddPathPrefix = path => `file://${path}`;
  * @property {String} cacheLocation
  * @property {String[] | boolean} useQueryParamsInCacheKey string[]|boolean an array of keys to use from the source. uri query string or a bool value stating whether to use the entire query string or not. (default: false)
  * @property {ActivityIndicatorProps} activityIndicatorProps props for the ActivityIndicator that is shown while the image is downloaded.
- * @property {(props: ActivityIndicatorProps) => JSX.Element} loadingIndicator component prop to set custom ActivityIndicator 
+ * @property {(props: ActivityIndicatorProps) => JSX.Element} loadingIndicator component prop to set custom ActivityIndicator
  * @property {(props: ImageBackgroundProps) => JSX.Element} renderImage
- * @property {() => Object} resolveHeaders function when provided, the returned object will be used as the headers object when sending the request to download the image. (default: () => Promise.resolve({})) 
+ * @property {() => Object} resolveHeaders function when provided, the returned object will be used as the headers object when sending the request to download the image. (default: () => Promise.resolve({}))
  */
 /**
  * @param {ImageCacheableParams & ImageBackgroundProps} props
@@ -94,7 +94,7 @@ const ImageCacheableComponent = (props, ref) => {
                     setLastFetched(url);
                 }
             } catch (e) {
-                console.log(e);
+                console.log({ ...e });
                 if (isMounted) {
                     setIsCacheable(false);
                     setCachedImagePath(null);
