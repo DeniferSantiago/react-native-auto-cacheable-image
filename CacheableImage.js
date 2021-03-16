@@ -76,11 +76,16 @@ const CacheableImageComponent = (props, ref) => {
     const { isConnected } = useNetInfo();
     const imageProps = getImageProps(props);
     const managerOptions = getCacheManagerOptions(props);
+    const [mOptions, SetMOptions] = useState(managerOptions ?? {});
     const cacheManager = useMemo(() => {
         console.log("New Instance");
-        return new CacheManager(managerOptions);
-    }, [managerOptions]);
+        return new CacheManager(mOptions);
+    }, [mOptions]);
     const { source: originSource } = props;
+    useEffect(() => {
+        const changed = !_.isEqual(managerOptions, mOptions);
+        if (changed) SetMOptions(managerOptions);
+    }, [managerOptions]);
     useEffect(() => {
         let isMounted = true;
         const processSource = async source => {
@@ -122,7 +127,7 @@ const CacheableImageComponent = (props, ref) => {
 
         const activityIndicatorProps = _.omit(props.activityIndicatorProps, [
             "style"
-        ]);
+        ]) ?? { animating: true, size: "small" };
         const activityIndicatorStyle =
             props.activityIndicatorProps?.style ?? defaultStyles.loader;
 
