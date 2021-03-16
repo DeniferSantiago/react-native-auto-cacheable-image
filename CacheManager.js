@@ -39,32 +39,27 @@ async function cacheUrl(url, options, getCachedFile) {
     const cacheableUrl = getCacheableUrl(url, options.useQueryParamsInCacheKey);
     // note: urlCache may remove the entry if it expired so we need to remove the leftover file manually
     try {
-        var fileRelativePath;
-        try {
-            fileRelativePath = await MemoryCache.get(cacheableUrl);
-        } catch (e) {
-            console.log({ ...e, where: "cacheUrl:MemoryCache.get" });
-        }
+        const fileRelativePath = await MemoryCache.get(cacheableUrl);
         if (!fileRelativePath) {
             // console.log('ImageCacheManager: url cache miss', cacheableUrl);
             throw new Error("URL expired or not in cache");
         }
         // console.log('ImageCacheManager: url cache hit', cacheableUrl);
         const cachedFilePath = `${options.cacheLocation}/${fileRelativePath}`;
-        const exists = await WrapperFS.exists(cachedFilePath);
-        if (exists) {
-            return cachedFilePath;
-        } else {
-            throw new Error(
-                "file under URL stored in url cache doesn't exists"
-            );
+        console.log(`cachedFilePath: ${cachedFilePath}`);
+        try {
+            await WrapperFS.exists(cachedFilePath); //throw error if not exist
+        } catch (e) {
+            console.log({ ...e, where: "WrapperFS.exists" });
+            throw e;
         }
+        return cachedFilePath;
     } catch (e) {
         console.log({ ...e, where: "cacheUrl" });
         const fileRelativePath_1 = getImageRelativeFilePath(cacheableUrl);
         const filePath = `${options.cacheLocation}/${fileRelativePath_1}`;
         await WrapperFS.deleteFile(filePath);
-        getCachedFile(filePath);
+        await getCachedFile(filePath);
         await MemoryCache.set(cacheableUrl, fileRelativePath_1, options.ttl);
         return filePath;
     }
