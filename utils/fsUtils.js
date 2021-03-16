@@ -93,6 +93,7 @@ export class WrapperFS {
      * @param {Object} headers   Object with headers to use when downloading the file
      */
     static downloadFile(fromUrl, toFile, headers) {
+        console.log("Entry");
         // use toFile as the key as is was created using the cacheKey
         if (!has(activeDownloads, toFile)) {
             // using a temporary file, if the download is accidentally interrupted, it will not produce a disabled file
@@ -101,7 +102,9 @@ export class WrapperFS {
             /**@returns {Promise<String>}*/
             activeDownloads[toFile] = async () => {
                 try {
+                    console.log("ENtry Active Downloads");
                     await ensurePath();
+                    console.log("ensurePath");
                     var totalSize = 0;
                     const { promise } = downloadF({
                         toFile: tmpFile,
@@ -109,11 +112,15 @@ export class WrapperFS {
                         headers,
                         begin: val => (totalSize = val.contentLength)
                     });
+                    console.log("downloadF");
                     const result = await promise;
+                    console.log("promise");
+                    console.log(result);
                     if (result.statusCode === 304) {
                         return toFile;
                     }
                     let status = Math.floor(result.statusCode / 100);
+                    console.log(status);
                     if (status !== 2) {
                         throw new Error(
                             "Cannot download image, status code: " +
@@ -121,13 +128,18 @@ export class WrapperFS {
                         );
                     }
                     const stats = await stat(tmpFile);
+                    console.log("stats");
+                    console.log(stats);
                     if (totalSize !== stats.size) {
+                        console.log("Download failed");
                         throw new Error(
                             "Download failed, the image could not be fully downloaded"
                         );
                     }
                     await moveFile(tmpFile, toFile);
+                    console.log("moveFile");
                     await WrapperFS.deleteFile(tmpFile);
+                    console.log("deleteFile");
                     delete activeDownloads[toFile];
                     return toFile;
                 } catch (e) {

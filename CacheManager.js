@@ -40,11 +40,8 @@ async function cacheUrl(url, options, getCachedFile) {
         const filePath = `${options.cacheLocation}/${fileRelativePath_1}`;
         const exist = await WrapperFS.exists(filePath);
         if (exist) await WrapperFS.deleteFile(filePath);
-        console.log("pass deleteFile");
         await getCachedFile(filePath);
-        console.log("pass get cached");
         await MemoryCache.set(cacheableUrl, fileRelativePath_1, options.ttl);
-        console.log("pass set Memory cache");
         return filePath;
     };
     // cacheableUrl contains only the needed query params
@@ -60,8 +57,10 @@ async function cacheUrl(url, options, getCachedFile) {
             console.log(`cachedFilePath: ${cachedFilePath}`);
             const exist = await WrapperFS.exists(cachedFilePath);
             if (exist) {
+                console.log("Exist");
                 return cachedFilePath;
             } else {
+                console.log("Not Exist");
                 return NewCache();
             }
         }
