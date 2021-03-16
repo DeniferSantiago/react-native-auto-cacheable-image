@@ -112,7 +112,7 @@ export class WrapperFS {
             activeDownloads[toFile] = async () => {
                 try {
                     console.log("ENtry Active Downloads");
-                    await ensurePath();
+                    await ensurePath(toFile);
                     console.log("ensurePath");
                     var totalSize = 0;
                     const { promise } = downloadF({
