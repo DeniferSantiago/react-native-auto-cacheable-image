@@ -1,8 +1,8 @@
 import * as ReactNative from "react-native";
-import * as React from 'react'
+import * as React from "react"
 
-declare module "react-native-image-cacheable" {
-  namespace ImageCacheable {
+declare module "react-native-cacheable-image" {
+  namespace CacheableImage {
     interface Image extends ReactNative.ImageBackgroundProps {
       /**
        * props for the ActivityIndicator that is shown while the image is downloaded.
@@ -79,7 +79,7 @@ declare module "react-native-image-cacheable" {
       size: number
     }
 
-    interface ImageCacheManager {
+    interface CacheManager {
       /** download an image and cache the result according to the given options */
       downloadAndCacheUrl(url: String, options: CacheOptions ): Promise<String>
 
@@ -107,6 +107,6 @@ declare module "react-native-image-cacheable" {
       // }
     }
   }
-  export class ImageCacheable extends React.Component<ImageCacheable.Image, any> {}
-  export const CacheManager: CachedImage.CacheManager
+  export class CacheableImage extends React.Component<CacheableImage.Image, any> {}
+  export const CacheManager: CacheableImage.CacheManager
 }

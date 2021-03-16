@@ -1,17 +1,15 @@
 import { has, initial, sumBy, flattenDeep } from "lodash";
-
-const {
+import {
     CachesDirectoryPath,
-    exists: existF,
+    exists as existF,
     mkdir,
     stat,
     readdir,
     unlink,
-    copyFile: copyF,
-    downloadFile: downloadF,
+    copyFile as copyF,
+    downloadFile as downloadF,
     moveFile
-} = require("react-native-fs");
-
+} from "react-native-fs";
 const activeDownloads = {};
 /**
  * @param {String} path

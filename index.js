@@ -1,3 +1,3 @@
 import { CacheManager } from "./CacheManager";
-import { ImageCacheable } from "./ImageCacheable";
-export { CacheManager, ImageCacheable };
+import { CacheableImage } from "./CacheableImage";
+export { CacheManager, CacheableImage };

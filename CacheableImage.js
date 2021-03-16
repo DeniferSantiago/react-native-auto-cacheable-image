@@ -69,7 +69,7 @@ const AddPathPrefix = path => `file://${path}`;
  * @param {ImageCacheableParams & ImageBackgroundProps} props
  * @param {React.MutableRefObject<ImageBackground>} ref
  */
-const ImageCacheableComponent = (props, ref) => {
+const CacheableImageComponent = (props, ref) => {
     const [lastFetched, setLastFetched] = useState();
     const [isCacheable, setIsCacheable] = useState(true);
     const [cachedImagePath, setCachedImagePath] = useState();
@@ -194,4 +194,4 @@ const ImageCacheableComponent = (props, ref) => {
 /**
  * Image component that caches the uri automatically, if the uri had previously been cached it will be loaded from the cache
  */
-export const ImageCacheable = forwardRef(ImageCacheableComponent);
+export const CacheableImage = forwardRef(CacheableImageComponent);
