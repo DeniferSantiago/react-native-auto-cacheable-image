@@ -79,8 +79,11 @@ export class CacheManager {
      * @param {Object} options
      */
     downloadAndCacheUrl(url, options = {}) {
-        return cacheUrl(url, options, filePath =>
-            WrapperFS.downloadFile(url, filePath, options.headers)
+        return cacheUrl(
+            url,
+            options,
+            async filePath =>
+                await WrapperFS.downloadFile(url, filePath, options.headers)
         );
     }
     /**
@@ -90,8 +93,10 @@ export class CacheManager {
      * @param options
      */
     seedAndCacheUrl(url, seedPath, options = {}) {
-        return cacheUrl(url, options, filePath =>
-            WrapperFS.copyFile(seedPath, filePath)
+        return cacheUrl(
+            url,
+            options,
+            async filePath => await WrapperFS.copyFile(seedPath, filePath)
         );
     }
     /**
