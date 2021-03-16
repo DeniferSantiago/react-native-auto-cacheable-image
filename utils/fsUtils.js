@@ -127,7 +127,7 @@ export class WrapperFS {
                         );
                     }
                     await moveFile(tmpFile, toFile);
-                    WrapperFS.deleteFile(tmpFile);
+                    await WrapperFS.deleteFile(tmpFile);
                     delete activeDownloads[toFile];
                     return toFile;
                 } catch (e) {
