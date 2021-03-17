@@ -50,7 +50,13 @@ const getImageProps = props => {
 const getCacheManagerOptions = props => {
     return _.pick(props, _.keys(defaultOptions));
 };
-const getLoaderSize = (width, height) => {
+/**
+ * @param {Number} width default 16 (small size)
+ * @param {Number} height default 16 (small size)
+ */
+const getLoaderSize = (width = 16, height = 16) => {
+    if (!_.isNumber(width)) width = 16;
+    if (!_.isNumber(height)) height = 16;
     const maxSize = 72;
     const min = Math.min(width, height);
     return min > maxSize + 5 ? maxSize : min - 5;
