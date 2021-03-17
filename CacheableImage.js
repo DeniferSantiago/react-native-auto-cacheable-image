@@ -128,6 +128,7 @@ const CacheableImageComponent = (props, ref) => {
         const activityIndicatorProps = _.omit(props.activityIndicatorProps, [
             "style"
         ]) ?? { animating: true, size: "small" };
+        console.log(activityIndicatorProps);
         const activityIndicatorStyle =
             props.activityIndicatorProps?.style ?? defaultStyles.loader;
 
@@ -174,10 +175,11 @@ const CacheableImageComponent = (props, ref) => {
             )
         });
     };
-    if (isCacheable && !cachedImagePath) {
+    return renderLoader();
+    /*if (isCacheable && !cachedImagePath) {
         console.log("Set Loader");
         return renderLoader();
-    }
+    }*/
     const style = props.style ?? defaultStyles.image;
     const source =
         isCacheable && cachedImagePath
