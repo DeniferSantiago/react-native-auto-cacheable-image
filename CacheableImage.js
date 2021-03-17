@@ -50,6 +50,11 @@ const getImageProps = props => {
 const getCacheManagerOptions = props => {
     return _.pick(props, _.keys(defaultOptions));
 };
+const getLoaderSize = (width, height) => {
+    const maxSize = 72;
+    const min = Math.min(width, height);
+    return min > maxSize + 5 ? maxSize : min - 5;
+};
 /**
  * @param {String} path
  */
@@ -124,16 +129,15 @@ const CacheableImageComponent = (props, ref) => {
     };
     const renderLoader = () => {
         const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
-
+        const flattenStyle = StyleSheet.flatten(imageStyle);
         const activityIndicatorProps = _.omit(
             props.activityIndicatorProps ?? {
                 animating: true,
-                size: "small",
+                size: getLoaderSize(flattenStyle.width, flattenStyle.height),
                 color: "#999"
             },
             ["style"]
         );
-        console.log(activityIndicatorProps);
         const activityIndicatorStyle =
             props.activityIndicatorProps?.style ?? defaultStyles.loader;
 
@@ -145,8 +149,7 @@ const CacheableImageComponent = (props, ref) => {
         // so we only show the ActivityIndicator
         if (
             !source ||
-            (Platform.OS === "android" &&
-                StyleSheet.flatten(imageStyle).borderRadius)
+            (Platform.OS === "android" && flattenStyle.borderRadius)
         ) {
             if (LoadingIndicator) {
                 return (
@@ -180,11 +183,10 @@ const CacheableImageComponent = (props, ref) => {
             )
         });
     };
-    return renderLoader();
-    /*if (isCacheable && !cachedImagePath) {
+    if (isCacheable && !cachedImagePath) {
         console.log("Set Loader");
         return renderLoader();
-    }*/
+    }
     const style = props.style ?? defaultStyles.image;
     const source =
         isCacheable && cachedImagePath
