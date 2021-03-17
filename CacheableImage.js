@@ -126,7 +126,11 @@ const CacheableImageComponent = (props, ref) => {
         const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
 
         const activityIndicatorProps = _.omit(
-            props.activityIndicatorProps ?? { animating: true, size: "small" },
+            props.activityIndicatorProps ?? {
+                animating: true,
+                size: "small",
+                color: "#999"
+            },
             ["style"]
         );
         console.log(activityIndicatorProps);
