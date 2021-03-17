@@ -11,13 +11,13 @@ export class CacheContextValue {
         this.#loaded = {};
     }
     getCached(url) {
-        if (_.isString(url)) return this.loaded[url];
+        if (_.isString(url)) return this.#loaded[url];
         throw new Error("url argument must be string");
     }
     setCached(url, cachedPath) {
         if (_.isString(url)) {
             if (_.isString(cachedPath)) {
-                return this.loaded[url];
+                return this.#loaded[url];
             }
             throw new Error("cachedPath argument must be string");
         }
