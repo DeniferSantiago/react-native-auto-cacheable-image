@@ -1,4 +1,10 @@
-import React, { forwardRef, useState, useMemo, useEffect, useContext } from "react";
+import React, {
+    forwardRef,
+    useState,
+    useMemo,
+    useEffect,
+    useContext
+} from "react";
 import {
     View,
     StyleSheet,
@@ -96,7 +102,7 @@ const CacheableImageComponent = (props, ref) => {
     });
     const cacheManager = useMemo(() => {
         if (props.ignoreContext || !cacheContext)
-            return new CacheContext(mOptions);
+            return new CacheManager(mOptions);
         else return cacheContext.manager;
     }, [mOptions, props.ignoreContext]);
     const { source: originSource } = props;
