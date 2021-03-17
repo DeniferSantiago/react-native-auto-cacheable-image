@@ -31,10 +31,12 @@ export const createProviderValue = (manager, enabled = true) => {
                     const newVal = { ...loaded };
                     newVal[url] = cachedPath;
                     loaded = newVal;
+                } else {
+                    throw new Error("cachedPath argument must be string");
                 }
-                throw new Error("cachedPath argument must be string");
+            } else {
+                throw new Error("url argument must be string");
             }
-            throw new Error("url argument must be string");
         }
     };
 };
