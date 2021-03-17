@@ -19,8 +19,6 @@ Add the following line to your android/app/src/AndroidManifest.xml
 
 ## Usage
 
-TODO - add usage example
-
 ```jsx
 /**
  * Sample React Native App
