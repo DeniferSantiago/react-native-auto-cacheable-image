@@ -102,7 +102,8 @@ const CacheableImageComponent = (props, ref) => {
     });
     const { ignoreContext } = props;
     const cacheManager = useMemo(() => {
-        if (ignoreContext || !cacheContext) return new CacheManager(mOptions);
+        if (ignoreContext || !cacheContext.enabled)
+            return new CacheManager(mOptions);
         else return cacheContext.manager;
     }, [mOptions, ignoreContext]);
     const { source: originSource } = props;
@@ -118,14 +119,14 @@ const CacheableImageComponent = (props, ref) => {
         const processSource = async source => {
             const url = source?.uri;
             try {
-                console.log(`Loading ${url}`);
                 var cachedPath = cacheContext?.getCached(url);
                 if (!cachedPath) {
                     cachedPath = await cacheManager.downloadAndCacheUrl(
                         url,
                         managerOptions
                     );
-                    cacheContext?.setCached(url, cachedPath);
+                    if (cacheContext.enabled)
+                        cacheContext?.setCached(url, cachedPath);
                 } else {
                     console.log("From Context");
                 }
