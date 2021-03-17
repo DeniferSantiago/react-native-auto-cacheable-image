@@ -6,6 +6,14 @@ import {
 } from "../utils/pathUtils";
 import _ from "lodash";
 import MemoryCache from "react-native-async-storage-cache/MemoryCache";
+/**
+ * @typedef {Object} CacheOptions
+ * @property {Object} headers an object to be used as the headers when sending the request for the url
+ * @property {Number} ttl the number of seconds each url will stay in the cache. default 2 weeks
+ * @property {Boolean | String[]} useQueryParamsInCacheKey array|bool an array of keys to use from the source. uri query string or a bool value stating whether to use the entire query string or not. (default: false)
+ * @property {String} cacheLocation the root directory to use for caching, corresponds to CachedImage prop of same name, defaults to system cache directory
+ */
+/**@type {CacheOptions} */
 const defaultOptions = {
     headers: {},
     ttl: 3600 * 24 * 14, // 60 * 60 * 24 * 14, // 2 weeks
@@ -64,6 +72,10 @@ async function cacheUrl(url, options, getCachedFile) {
     }
 }
 export class CacheManager {
+    /**
+     * create new CacheManager instance
+     * @param {CacheOptions} options
+     */
     constructor(options) {
         this.options = { ...defaultOptions, ...options };
     }
@@ -71,6 +83,7 @@ export class CacheManager {
      * download an image and cache the result according to the given options
      * @param {String} url
      * @param {Object} options override instance options
+     * @returns {Promise<String>}
      */
     downloadAndCacheUrl(url, options = {}) {
         const copy = { ...this.options, ...options };
@@ -83,9 +96,10 @@ export class CacheManager {
     }
     /**
      * seed the cache for a specific url with a local file
-     * @param {String} url
-     * @param {String} seedPath
-     * @param options override instance options
+     * @param {String} url url to be registered
+     * @param {String} seedPath local file path that will be registered as the cache of the provided url
+     * @param {CacheOptions} options override instance options
+     * @returns {Promise<String>} returns a new cached path
      */
     seedAndCacheUrl(url, seedPath, options = {}) {
         const copy = { ...this.options, ...options };
@@ -97,8 +111,9 @@ export class CacheManager {
     }
     /**
      * delete the cache entry and file for a given url
-     * @param {String} url
+     * @param {String} url URL to be deleted from cache
      * @param {Object} options override instance options
+     * @returns {Promise<void>}
      */
     async deleteUrl(url, options = {}) {
         try {
@@ -120,13 +135,18 @@ export class CacheManager {
     }
     /**
      * delete all cached file from the filesystem and cache
+     * @returns {Promise<void>}
      */
     async clearCache() {
         await MemoryCache.flush();
         return await WrapperFS.cleanDir(this.options.cacheLocation);
     }
     /**
+     * @typedef {({ files: import("react-native-fs").StatResult[], size: Number})} CacheInfo
+     */
+    /**
      * return info about the cache, list of files and the total size of the cache
+     * @returns {Promise<CacheInfo>}
      */
     getCacheInfo() {
         return WrapperFS.getDirInfo(this.options.cacheLocation);
