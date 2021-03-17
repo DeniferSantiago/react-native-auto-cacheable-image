@@ -115,6 +115,7 @@ const CacheableImageComponent = (props, ref) => {
         const processSource = async source => {
             const url = source?.uri;
             try {
+                console.log(`Loading ${url}`);
                 var cachedPath = cacheContext?.getCached(url);
                 if (!cachedPath) {
                     cachedPath = await cacheManager.downloadAndCacheUrl(
@@ -122,7 +123,10 @@ const CacheableImageComponent = (props, ref) => {
                         managerOptions
                     );
                     cacheContext?.setCached(url, cachedPath);
+                } else {
+                    console.log("From Context");
                 }
+                console.log(cachedPath);
                 if (isMounted) {
                     setCachedImagePath(cachedPath);
                     setLastFetched(url);
