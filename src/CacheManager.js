@@ -1,9 +1,9 @@
-import { WrapperFS } from "./utils/fsUtils";
+import { WrapperFS } from "../utils/fsUtils";
 import {
     getCacheableUrl,
     getImageFilePath,
     getImageRelativeFilePath
-} from "./utils/pathUtils";
+} from "../utils/pathUtils";
 import _ from "lodash";
 import MemoryCache from "react-native-async-storage-cache/MemoryCache";
 const defaultOptions = {
@@ -11,7 +11,7 @@ const defaultOptions = {
     ttl: 3600 * 24 * 14, // 60 * 60 * 24 * 14, // 2 weeks
     useQueryParamsInCacheKey: false,
     cacheLocation: WrapperFS.getCacheDir(),
-    allowSelfSignedSSL: true // false,
+    allowSelfSignedSSL: false // false,
 };
 /**
  * it is considered cacheable if it is a url
@@ -33,8 +33,6 @@ async function cacheUrl(url, options, getCachedFile) {
     if (!isCacheable(url)) {
         return Promise.reject(new Error("Url is not cacheable"));
     }
-    // allow CachedImage to provide custom options
-    _.defaults(options, defaultOptions);
     const NewCache = async () => {
         const fileRelativePath_1 = getImageRelativeFilePath(cacheableUrl);
         const filePath = `${options.cacheLocation}/${fileRelativePath_1}`;
@@ -66,19 +64,19 @@ async function cacheUrl(url, options, getCachedFile) {
     }
 }
 export class CacheManager {
-    constructor(options = defaultOptions) {
-        _.defaults(options, defaultOptions);
-        this.options = options;
+    constructor(options) {
+        this.options = { ...defaultOptions, ...options };
     }
     /**
      * download an image and cache the result according to the given options
      * @param {String} url
-     * @param {Object} options
+     * @param {Object} options override instance options
      */
     downloadAndCacheUrl(url, options = {}) {
+        const copy = { ...this.options, ...options };
         return cacheUrl(
             url,
-            options,
+            copy,
             async filePath =>
                 await WrapperFS.downloadFile(url, filePath, options.headers)
         );
@@ -87,34 +85,32 @@ export class CacheManager {
      * seed the cache for a specific url with a local file
      * @param {String} url
      * @param {String} seedPath
-     * @param options
+     * @param options override instance options
      */
     seedAndCacheUrl(url, seedPath, options = {}) {
+        const copy = { ...this.options, ...options };
         return cacheUrl(
             url,
-            options,
+            copy,
             async filePath => await WrapperFS.copyFile(seedPath, filePath)
         );
     }
     /**
      * delete the cache entry and file for a given url
      * @param {String} url
-     * @param {Object} options
+     * @param {Object} options override instance options
      */
     async deleteUrl(url, options = {}) {
         try {
             if (!isCacheable(url)) {
                 throw new Error("Url is not cacheable");
             }
-            _.defaults(options, defaultOptions);
+            const copy = { ...this.options, ...options };
             const cacheableUrl = getCacheableUrl(
                 url,
-                options.useQueryParamsInCacheKey
+                copy.useQueryParamsInCacheKey
             );
-            const filePath = getImageFilePath(
-                cacheableUrl,
-                options.cacheLocation
-            );
+            const filePath = getImageFilePath(cacheableUrl, copy.cacheLocation);
             // remove file from cache
             await MemoryCache.remove(cacheableUrl);
             return await WrapperFS.deleteFile(filePath);

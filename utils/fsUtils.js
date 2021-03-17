@@ -97,7 +97,7 @@ export class WrapperFS {
             const tmpFile = toFile + ".tmp";
             // create an active download for this file
             /**@returns {Promise<String>}*/
-            activeDownloads[toFile] = async () => {
+            activeDownloads[toFile] = (async () => {
                 try {
                     await ensurePath(toFile);
                     const { promise } = downloadF({
@@ -128,9 +128,9 @@ export class WrapperFS {
                 } catch (e) {
                     throw e;
                 }
-            };
+            })();
         }
-        return activeDownloads[toFile]();
+        return activeDownloads[toFile];
     }
     /**
      * remove the file in filePath if it exists.

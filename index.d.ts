@@ -23,6 +23,10 @@ declare module "react-native-auto-cacheable-image" {
        */
       useQueryParamsInCacheKey: string[] | boolean
       /**
+       * if true, this CacheableImage instance will not use the context of a CacheProvider
+       */
+      ignoreContext: boolean
+      /**
        * string allows changing the root directory to use for caching.
        * The default directory is sufficient for most use-cases.
        * Images in this directory may be purged by Android automatically to free up space.
@@ -42,7 +46,6 @@ declare module "react-native-auto-cacheable-image" {
        */
       fallbackSource: ReactNative.ImageURISource
     }
-
     interface CacheOptions  {
       /** an object to be used as the headers when sending the request for the url */
       headers: object
@@ -58,8 +61,6 @@ declare module "react-native-auto-cacheable-image" {
        * defaults to system cache directory
        */
       cacheLocation: string
-      /** true to allow self signed SSL URLs to be downloaded. default false */
-      allowSelfSignedSSL: boolean
     }
     //From react-native-fs
     type CacheStat = {
@@ -73,13 +74,16 @@ declare module "react-native-auto-cacheable-image" {
       isFile: () => boolean // Is the path just a file?
       isDirectory: () => boolean // Is the path a directory?
     }
-
     interface CacheInfo {
       files: CacheStat[]
       size: number
     }
-
-    interface CacheManager {
+    class CacheManager {
+      /**
+       * create new CacheManager instance
+       * @param options cache options for this instance
+       */
+      constructor(options: CacheOptions)
       /** download an image and cache the result according to the given options */
       downloadAndCacheUrl(url: String, options: CacheOptions ): Promise<String>
 
@@ -100,13 +104,31 @@ declare module "react-native-auto-cacheable-image" {
       /**
        * Return info about the cache, list of files and the total size of the cache.
        */
-      getCacheInfo(options?: CacheOptions): Promise<CacheInfo>
+      getCacheInfo(): Promise<CacheInfo>
       // LOCATION : {
       //   CACHE: string
       //   BUNDLE: string
       // }
     }
+    class CacheContextValue {
+      /**
+       * create context value for CacheProvider
+       * @param manager The CacheManager to be used in the CacheableImage components under the provider
+       */
+      constructor(manager: CacheManager)
+      /**
+       * @param url if this url was previously cached by some CacheableImage component it will return the url from the cache immediately
+       */
+      getCached(url: String) : String
+      /**
+       * @param url url to be registered
+       * @param cachedPath cached file path
+       */
+      setCached(url: String, cachedPath: String) : void
+    }
   }
   export class CacheableImage extends React.Component<CacheableImage.Image, any> {}
   export const CacheManager: CacheableImage.CacheManager
+  export const CacheContextValue: CacheableImage.CacheContextValue
+  export const CacheProvider: React.Context<CacheableImage.CacheContextValue>
 }

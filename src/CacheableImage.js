@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useMemo, useEffect } from "react";
+import React, { forwardRef, useState, useMemo, useEffect, useContext } from "react";
 import {
     View,
     StyleSheet,
@@ -13,7 +13,8 @@ import {
 import _ from "lodash";
 import { CacheManager } from "./CacheManager";
 import { useNetInfo } from "@react-native-community/netinfo";
-import { WrapperFS } from "./utils/fsUtils";
+import { WrapperFS } from "../utils/fsUtils";
+import { CacheContext } from "./CacheContext";
 const defaultStyles = StyleSheet.create({
     image: {
         backgroundColor: "transparent"
@@ -32,7 +33,7 @@ const defaultOptions = {
     ttl: 3600 * 24 * 14, // 60 * 60 * 24 * 14, // 2 weeks
     useQueryParamsInCacheKey: false,
     cacheLocation: WrapperFS.getCacheDir(),
-    allowSelfSignedSSL: true // false,
+    allowSelfSignedSSL: false // false,
 };
 const getImageProps = props => {
     return _.omit(props, [
@@ -70,6 +71,7 @@ const AddPathPrefix = path => `file://${path}`;
  * @property {ImageURISource} defaultSource prop to display a background image while the source image is downloaded. This will work even in android, but will not display background image if there you set borderRadius on this component style prop
  * @property {ImageURISource} fallbackSource prop to set placeholder image. when source.uri is null or cached failed, the fallbackSource will be display.
  * @property {String} cacheLocation
+ * @property {Boolean} ignoreContext
  * @property {String[] | boolean} useQueryParamsInCacheKey string[]|boolean an array of keys to use from the source. uri query string or a bool value stating whether to use the entire query string or not. (default: false)
  * @property {ActivityIndicatorProps} activityIndicatorProps props for the ActivityIndicator that is shown while the image is downloaded.
  * @property {(props: ActivityIndicatorProps) => JSX.Element} loadingIndicator component prop to set custom ActivityIndicator
@@ -87,24 +89,34 @@ const CacheableImageComponent = (props, ref) => {
     const { isConnected } = useNetInfo();
     const imageProps = getImageProps(props);
     const managerOptions = getCacheManagerOptions(props);
-    const [mOptions, setMOptions] = useState(managerOptions ?? {});
-    const cacheManager = useMemo(() => new CacheManager({ ...mOptions }), [
-        mOptions
-    ]);
+    const cacheContext = useContext(CacheContext);
+    const [mOptions, setMOptions] = useState({
+        ...defaultOptions,
+        ...managerOptions
+    });
+    const cacheManager = useMemo(() => {
+        if (props.ignoreContext || !cacheContext)
+            return new CacheContext(mOptions);
+        else return cacheContext.manager;
+    }, [mOptions, props.ignoreContext]);
     const { source: originSource } = props;
     useEffect(() => {
         const changed = !_.isEqual(managerOptions, mOptions);
-        if (changed) setMOptions(managerOptions);
+        if (changed) setMOptions({ ...defaultOptions, ...managerOptions });
     }, [managerOptions]);
     useEffect(() => {
         let isMounted = true;
         const processSource = async source => {
             const url = source?.uri;
             try {
-                const cachedPath = await cacheManager.downloadAndCacheUrl(
-                    url,
-                    managerOptions
-                );
+                var cachedPath = cacheContext?.getCached(url);
+                if (!cachedPath) {
+                    cachedPath = await cacheManager.downloadAndCacheUrl(
+                        url,
+                        managerOptions
+                    );
+                    cacheContext?.setCached(url, cachedPath);
+                }
                 if (isMounted) {
                     setCachedImagePath(cachedPath);
                     setLastFetched(url);
