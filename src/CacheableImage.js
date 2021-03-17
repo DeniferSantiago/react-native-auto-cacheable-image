@@ -100,11 +100,11 @@ const CacheableImageComponent = (props, ref) => {
         ...defaultOptions,
         ...managerOptions
     });
+    const { ignoreContext } = props;
     const cacheManager = useMemo(() => {
-        if (props.ignoreContext || !cacheContext)
-            return new CacheManager(mOptions);
+        if (ignoreContext || !cacheContext) return new CacheManager(mOptions);
         else return cacheContext.manager;
-    }, [mOptions, props.ignoreContext]);
+    }, [mOptions, ignoreContext]);
     const { source: originSource } = props;
     useEffect(() => {
         const changed = !_.isEqual(managerOptions, mOptions);
