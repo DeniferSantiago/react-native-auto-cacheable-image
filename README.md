@@ -20,14 +20,6 @@ Add the following line to your android/app/src/AndroidManifest.xml
 ## Usage
 
 ```jsx
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, {useMemo, useState} from 'react';
 import {
   Pressable,
@@ -145,8 +137,8 @@ export default App;
 ```
 
 ## API
-
 This package exposes 4 apis:
+
 ```jsx
 const {
     CacheableImage,// react-native component that is a drop-in replacement for your react-native `BackgroundImage` component
@@ -161,7 +153,7 @@ This is where all the cache magic takes place.
 The API usually takes a *URL* and a set of [`CacheOptions`](#cacheoptions).
 
 #### `new CacheManager().downloadAndCacheUrl(url: String, options: CacheOptions): Promise<String>`
-Check the cache for the the URL (after removing fixing the query string according to `ImageCacheManagerOptions.useQueryParamsInCacheKey`).
+Check the cache for the the URL (after removing fixing the query string according to `CacheOptions.useQueryParamsInCacheKey`).
 If the URL exists in cache and is not expired, resolve with the local cached file path.
 Otherwise, download the file to the cache folder, add it to the cache and then return the cached file path.
 
@@ -177,13 +169,13 @@ Removes the cache entry for the URL and the local file corresponding to it, if i
 Clear the URL cache and delete files in the default cache folder or the one specified in the current instance (as stated in the `CacheOptions.cacheLocation`)
 
 #### `new CacheManager().getCacheInfo(): Promise<CacheInfo>`
-Returns info about the cache, list of files and the total size of the cache.
-
+Returns [info](#cacheinfo) about the cache, list of files and the total size of the cache.
 
 ### CacheableImage
 `CacheableImage` is a drop in replacement for the `BackgroundImage` component that will attempt to cache remote URLs for better performance.  
 It's main use is to hide the cache layer from the user and provide a simple way to cache images.  
 `CacheableImage` uses an instance of `CacheManager` to interact with the cache.
+
 ```jsx
 <CacheableImage
     style={styles.image}
@@ -199,10 +191,11 @@ It's main use is to hide the cache layer from the user and provide a simple way 
 * `loadingIndicator` - _component_ prop to set custom `ActivityIndicator`.
 * `ignoreContext` - flag that indicates whether to ignore the context and use its own `CacheManager` instance in the `CacheableImage`.
 * `fallbackSource` - prop to set placeholder image. When `source.uri` is null or cached failed, the `fallbackSource` will be display.
-* any of the `CacheOptions` props - customize the `CacheManager` for this specific `CacheableImage` instance.
+* any of the [`CacheOptions`](#cacheoptions) props - customize the [`CacheManager`](#cachemanager) for this specific [`CacheableImage`](#cacheableimage) instance.
 
 ### CacheProvider and createProviderValue
 `CacheProvider` provides context to be used by all CacheableImage components. `createProviderValue` is a function that should be used to create the value provided to `CacheProvider`.
+
 ```jsx
 import {
   CacheManager,
@@ -218,9 +211,10 @@ const App = () => {
   );
 }
 ```
+
 ## Some types
 ### CacheOptions
-A set of options that are provided to the `CacheManager` and provide ways to customize it to your needs.
+A set of options that are provided to the [`CacheManager`](#cachemanager) and provide ways to customize it to your needs.
 
 ```jsx
 interface CacheOptions  {
@@ -242,7 +236,7 @@ interface CacheOptions  {
 ```
 
 ### CacheInfo
-contains the current cache information returned by `getCacheInfo()`.
+contains the current cache information returned by [`getCacheInfo()`](#new-cachemanagergetcacheinfo-promisecacheinfo).
 
 ```jsx
 interface CacheInfo {
@@ -250,6 +244,7 @@ interface CacheInfo {
     size: number // total cache size
 }
 ```
+
 ### CacheStat
 Show information about a file.
 
