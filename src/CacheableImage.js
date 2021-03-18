@@ -127,10 +127,7 @@ const CacheableImageComponent = (props, ref) => {
                     );
                     if (cacheContext.enabled)
                         cacheContext?.setCached(url, cachedPath);
-                } else {
-                    console.log("From Context");
                 }
-                console.log(cachedPath);
                 if (isMounted) {
                     setCachedImagePath(cachedPath);
                     setLastFetched(url);
