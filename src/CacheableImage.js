@@ -194,7 +194,6 @@ const CacheableImageComponent = (props, ref) => {
         return renderImage({
             ...imageProps,
             style: imageStyle,
-            key: source.uri,
             source,
             children: LoadingIndicator ? (
                 <View style={[imageStyle, activityIndicatorStyle]}>
@@ -219,14 +218,12 @@ const CacheableImageComponent = (props, ref) => {
     if (props.fallbackSource && !cachedImagePath) {
         return renderImage({
             ...props,
-            key: `${props.key || source.uri}error`,
             style,
             source: props.fallbackSource
         });
     }
     return renderImage({
         ...props,
-        key: props.key ?? source.uri,
         style,
         source
     });
