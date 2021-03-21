@@ -116,8 +116,10 @@ const CacheableImageComponent = (props, ref) => {
     }, [managerOptions]);
     useEffect(() => {
         let isMounted = true;
+        console.log("mount");
         const processSource = async source => {
             const url = source?.uri;
+            console.log("processing");
             try {
                 var cachedPath = cacheContext?.getCached(url);
                 if (!cachedPath) {
@@ -125,11 +127,13 @@ const CacheableImageComponent = (props, ref) => {
                     if (cacheContext.enabled)
                         cacheContext?.setCached(url, cachedPath);
                 }
+                console.log("fetched");
                 if (isMounted) {
                     setCachedImagePath(cachedPath);
                     setLastFetched(url);
                 }
             } catch (e) {
+                console.log(e);
                 if (isMounted) {
                     setIsCacheable(false);
                     setCachedImagePath(null);
@@ -144,6 +148,7 @@ const CacheableImageComponent = (props, ref) => {
         return () => {
             isMounted = false;
             interaction.cancel();
+            console.log("unmount");
         };
     }, [originSource, isConnected, cacheContext, cacheManager, lastFetched]);
     const renderImage = args => {
