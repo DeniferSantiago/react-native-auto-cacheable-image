@@ -105,7 +105,7 @@ const CacheableImageComponent = (props, ref) => {
         if (ignoreContext || !cacheContext.enabled)
             return new CacheManager(mOptions);
         else return cacheContext.manager;
-    }, [mOptions, ignoreContext]);
+    }, [ignoreContext, cacheContext.enabled, cacheContext.manager, mOptions]);
     const { source: originSource } = props;
     useEffect(() => {
         const changed = !_.isEqual(
@@ -121,10 +121,7 @@ const CacheableImageComponent = (props, ref) => {
             try {
                 var cachedPath = cacheContext?.getCached(url);
                 if (!cachedPath) {
-                    cachedPath = await cacheManager.downloadAndCacheUrl(
-                        url,
-                        managerOptions
-                    );
+                    cachedPath = await cacheManager.downloadAndCacheUrl(url);
                     if (cacheContext.enabled)
                         cacheContext?.setCached(url, cachedPath);
                 }
@@ -148,7 +145,7 @@ const CacheableImageComponent = (props, ref) => {
             isMounted = false;
             interaction.cancel();
         };
-    }, [originSource, isConnected]);
+    }, [originSource, isConnected, cacheContext, cacheManager, lastFetched]);
     const renderImage = args => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
