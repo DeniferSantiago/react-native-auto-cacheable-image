@@ -208,7 +208,7 @@ const CacheableImageComponent = (props, ref) => {
             )
         });
     };
-    if (isCacheable && !cachedImagePath) {
+    if (isCacheable && !cachedImagePath && isConnected) {
         return renderLoader();
     }
     const style = props.style ?? defaultStyles.image;
