@@ -151,7 +151,7 @@ const CacheableImageComponent = (props, ref) => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
         }
-        return <ImageBackground style={args.style} ref={ref} {...args} />;
+        return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
     };
     const renderLoader = () => {
         const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
