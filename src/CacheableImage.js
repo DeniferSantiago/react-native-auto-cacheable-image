@@ -64,7 +64,7 @@ const getCacheManagerOptions = props => {
 const getLoaderSize = (width = 16, height = 16) => {
     if (!_.isNumber(width)) width = 16;
     if (!_.isNumber(height)) height = 16;
-    const maxSize = 72;
+    const maxSize = 80;
     const min = Math.min(width, height);
     return min > maxSize + 5 ? maxSize : min - 5;
 };
@@ -151,7 +151,7 @@ const CacheableImageComponent = (props, ref) => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
         }
-        return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
+        return <ImageBackground style={args.style} ref={ref} {...args} />;
     };
     const renderLoader = () => {
         const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
