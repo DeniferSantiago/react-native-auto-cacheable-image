@@ -92,7 +92,7 @@ const CacheableImageComponent = (props, ref) => {
     const [lastFetched, setLastFetched] = useState();
     const [isCacheable, setIsCacheable] = useState(true);
     const [cachedImagePath, setCachedImagePath] = useState();
-    const { isConnected } = useNetInfo();
+    const { isInternetReachable } = useNetInfo();
     const imageProps = getImageProps(props);
     const managerOptions = getCacheManagerOptions(props);
     const cacheContext = useContext(CacheContext);
@@ -138,7 +138,7 @@ const CacheableImageComponent = (props, ref) => {
             }
         };
         const interaction = InteractionManager.runAfterInteractions(() => {
-            if (isConnected && originSource?.uri !== lastFetched) {
+            if (originSource?.uri !== lastFetched) {
                 processSource(originSource);
             }
         });
@@ -146,7 +146,13 @@ const CacheableImageComponent = (props, ref) => {
             isMounted = false;
             interaction.cancel();
         };
-    }, [originSource, isConnected, cacheContext, cacheManager, lastFetched]);
+    }, [
+        originSource,
+        isInternetReachable,
+        cacheContext,
+        cacheManager,
+        lastFetched
+    ]);
     const renderImage = args => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
@@ -208,7 +214,7 @@ const CacheableImageComponent = (props, ref) => {
             )
         });
     };
-    if (isCacheable && !cachedImagePath && isConnected) {
+    if (isCacheable && !cachedImagePath && isInternetReachable) {
         return renderLoader();
     }
     const style = props.style ?? defaultStyles.image;
