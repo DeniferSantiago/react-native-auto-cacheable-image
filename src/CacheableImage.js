@@ -160,7 +160,7 @@ const CacheableImageComponent = (props, ref) => {
         return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
     };
     const renderLoader = () => {
-        const imageStyle = [props.style, defaultStyles.loaderPlaceholder];
+        const imageStyle = [defaultStyles.loaderPlaceholder, props.style];
         const flattenStyle = StyleSheet.flatten(imageStyle);
         const activityIndicatorProps = _.omit(
             props.activityIndicatorProps ?? {
