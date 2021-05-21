@@ -193,18 +193,22 @@ const CacheableImageComponent = (props, ref) => {
             !source ||
             (Platform.OS === "android" && flattenStyle.borderRadius)
         ) {
-            if (LoadingIndicator) {
-                return (
-                    <View style={[imageStyle, activityIndicatorStyle]}>
-                        <LoadingIndicator {...activityIndicatorProps} />
-                    </View>
-                );
-            }
             return (
-                <ActivityIndicator
-                    {...activityIndicatorProps}
-                    style={[imageStyle, activityIndicatorStyle]}
-                />
+                <View
+                    style={[
+                        imageStyle,
+                        LoadingIndicator && activityIndicatorStyle
+                    ]}>
+                    {LoadingIndicator ? (
+                        <LoadingIndicator {...activityIndicatorProps} />
+                    ) : (
+                        <ActivityIndicator
+                            {...activityIndicatorProps}
+                            style={activityIndicatorStyle}
+                        />
+                    )}
+                    {props.children}
+                </View>
             );
         }
         // otherwise render an image with the defaultSource with the ActivityIndicator on top of it
