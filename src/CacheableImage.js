@@ -17,7 +17,7 @@ import {
     Platform
 } from "react-native";
 import _ from "lodash";
-import { CacheManager } from "./CacheManager";
+import { CacheManager, IsCacheable } from "./CacheManager";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { WrapperFS } from "../utils/fsUtils";
 import { CacheContext } from "./CacheContext";
@@ -90,10 +90,12 @@ const AddPathPrefix = path => `file://${path}`;
  */
 const CacheableImageComponent = (props, ref) => {
     const [lastFetched, setLastFetched] = useState();
-    const [isCacheable, setIsCacheable] = useState(true);
     const [cachedImagePath, setCachedImagePath] = useState();
     const { isInternetReachable } = useNetInfo();
     const imageProps = getImageProps(props);
+    const [isCacheable, setIsCacheable] = useState(() => {
+        return IsCacheable(props.source?.uri);
+    });
     const managerOptions = getCacheManagerOptions(props);
     const cacheContext = useContext(CacheContext);
     const [mOptions, setMOptions] = useState({
@@ -119,7 +121,7 @@ const CacheableImageComponent = (props, ref) => {
         const processSource = async source => {
             const url = source?.uri;
             try {
-                var cachedPath = cacheContext?.getCached(url);
+                var cachedPath = url ? cacheContext?.getCached(url) : null;
                 if (!cachedPath) {
                     cachedPath = await cacheManager.downloadAndCacheUrl(url);
                     if (cacheContext.enabled)
@@ -153,11 +155,19 @@ const CacheableImageComponent = (props, ref) => {
         cacheManager,
         lastFetched
     ]);
+    /**@param {ImageBackgroundProps} args*/
     const renderImage = args => {
         if (_.isFunction(props.renderImage)) {
             props.renderImage(args);
         }
-        return <ImageBackground imageStyle={args.style} ref={ref} {...args} />;
+        const { borderRadius } = StyleSheet.flatten(args.style);
+        return (
+            <ImageBackground
+                imageStyle={{ borderRadius }}
+                ref={ref}
+                {...args}
+            />
+        );
     };
     const renderLoader = () => {
         const imageStyle = [defaultStyles.loaderPlaceholder, props.style];
@@ -200,7 +210,7 @@ const CacheableImageComponent = (props, ref) => {
         // otherwise render an image with the defaultSource with the ActivityIndicator on top of it
         return renderImage({
             ...imageProps,
-            style: imageStyle,
+            style: props.style,
             source,
             children: LoadingIndicator ? (
                 <View style={[imageStyle, activityIndicatorStyle]}>

@@ -25,7 +25,7 @@ const defaultOptions = {
  * it is considered cacheable if it is a url
  * @param {String} url
  */
-function isCacheable(url) {
+export function IsCacheable(url) {
     return (
         _.isString(url) &&
         (_.startsWith(url.toLowerCase(), "http://") ||
@@ -38,7 +38,7 @@ function isCacheable(url) {
  * @param {(path: String) => Promise<void>} getCachedFile
  */
 async function cacheUrl(url, options, getCachedFile) {
-    if (!isCacheable(url)) {
+    if (!IsCacheable(url)) {
         return Promise.reject(new Error("Url is not cacheable"));
     }
     const NewCache = async () => {
@@ -117,7 +117,7 @@ export class CacheManager {
      */
     async deleteUrl(url, options = {}) {
         try {
-            if (!isCacheable(url)) {
+            if (!IsCacheable(url)) {
                 throw new Error("Url is not cacheable");
             }
             const copy = { ...this.options, ...options };
