@@ -216,15 +216,22 @@ const CacheableImageComponent = (props, ref) => {
             ...imageProps,
             style: props.style,
             source,
-            children: LoadingIndicator ? (
-                <View style={[imageStyle, activityIndicatorStyle]}>
-                    <LoadingIndicator {...activityIndicatorProps} />
+            children: (
+                <View
+                    style={[
+                        imageStyle,
+                        LoadingIndicator && activityIndicatorStyle
+                    ]}>
+                    {LoadingIndicator ? (
+                        <LoadingIndicator {...activityIndicatorProps} />
+                    ) : (
+                        <ActivityIndicator
+                            {...activityIndicatorProps}
+                            style={activityIndicatorStyle}
+                        />
+                    )}
+                    {props.children}
                 </View>
-            ) : (
-                <ActivityIndicator
-                    {...activityIndicatorProps}
-                    style={activityIndicatorStyle}
-                />
             )
         });
     };
