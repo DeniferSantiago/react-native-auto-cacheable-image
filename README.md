@@ -28,19 +28,13 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import {
-  CacheableImage,
-  CacheManager,
-  CacheProvider,
-  createProviderValue,
-} from 'react-native-auto-cacheable-image';
+import {CacheableImage, CacheManager} from 'react-native-auto-cacheable-image';
 const image1 =
   'https://www.pixelstalk.net/wp-content/uploads/2016/07/4k-Images-Free-Download.jpg';
 const image2 =
   'https://th.bing.com/th/id/R8d639b6bd4c730f02209c26e1f712fce?rik=mHKP47o8%2bOtzRA&riu=http%3a%2f%2fwallpaperheart.com%2fwp-content%2fuploads%2f2018%2f08%2f4k-wallpapers-for-pc-8.jpg&ehk=XDnFZulFK0kyBglghH6ntQdalyZmFlTj0H5EdHOp1Vc%3d&risl=&pid=ImgRaw';
 const image3 =
   'https://th.bing.com/th/id/R2654a6b6238b044b3e2653539e9c6f17?rik=b39aO9PTE%2bl%2b3g&riu=http%3a%2f%2fwallpaperheart.com%2fwp-content%2fuploads%2f2018%2f08%2f4k-wallpaper-for-pc-3.jpg&ehk=B8z0o5l%2b1nis%2f02law%2b4l12C2Gv0IcHW2Vo0tvCYDPs%3d&risl=&pid=ImgRaw';
-const contextValue = createProviderValue(new CacheManager());
 const App = () => {
   const manager = useMemo(() => new CacheManager(), []);
   const [duplicate, setDuplicate] = useState(false);
@@ -55,56 +49,54 @@ const App = () => {
     await manager.deleteUrl(image1);
   };
   return (
-    <CacheProvider value={{...contextValue}}>
-      <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}>
-          <Text style={styles.text}>Hello</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.text}>Hello</Text>
+        <CacheableImage
+          style={styles.image}
+          source={{uri: image1}}
+          defaultSource={require('./nocover.jpg')}
+          fallbackSource={require('./nocover.jpg')}
+        />
+        {duplicate && (
           <CacheableImage
             style={styles.image}
             source={{uri: image1}}
             defaultSource={require('./nocover.jpg')}
             fallbackSource={require('./nocover.jpg')}
           />
-          {duplicate && (
-            <CacheableImage
-              style={styles.image}
-              source={{uri: image1}}
-              defaultSource={require('./nocover.jpg')}
-              fallbackSource={require('./nocover.jpg')}
-            />
-          )}
-          <CacheableImage
-            style={styles.image}
-            source={{uri: image2}}
-            defaultSource={require('./nocover.jpg')}
-            fallbackSource={require('./nocover.jpg')}
-            />
-            <CacheableImage
-            style={styles.image}
-            source={{uri: image3}}
-            defaultSource={require('./nocover.jpg')}
-            fallbackSource={require('./nocover.jpg')}
+        )}
+        <CacheableImage
+          style={styles.image}
+          source={{uri: image2}}
+          defaultSource={require('./nocover.jpg')}
+          fallbackSource={require('./nocover.jpg')}
           />
-          <Pressable onPress={ClearAll} style={styles.button}>
-            <Text style={styles.text}>Clean cache</Text>
-          </Pressable>
-          <Pressable onPress={GetInfo} style={styles.button}>
-            <Text style={styles.text}>Info Cache</Text>
-          </Pressable>
-          <Pressable onPress={DeleteFirst} style={styles.button}>
-            <Text style={styles.text}>Remove First Cache</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setDuplicate(d => !d)}
-            style={styles.button}>
-            <Text style={styles.text}>Toggle Duplicate First</Text>
-          </Pressable>
-        </ScrollView>
-      </SafeAreaView>
-    </CacheProvider>
+          <CacheableImage
+          style={styles.image}
+          source={{uri: image3}}
+          defaultSource={require('./nocover.jpg')}
+          fallbackSource={require('./nocover.jpg')}
+        />
+        <Pressable onPress={ClearAll} style={styles.button}>
+          <Text style={styles.text}>Clean cache</Text>
+        </Pressable>
+        <Pressable onPress={GetInfo} style={styles.button}>
+          <Text style={styles.text}>Info Cache</Text>
+        </Pressable>
+        <Pressable onPress={DeleteFirst} style={styles.button}>
+          <Text style={styles.text}>Remove First Cache</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setDuplicate(d => !d)}
+          style={styles.button}>
+          <Text style={styles.text}>Toggle Duplicate First</Text>
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -142,9 +134,7 @@ This package exposes 4 apis:
 ```jsx
 const {
     CacheableImage,// react-native component that is a drop-in replacement for your react-native `BackgroundImage` component
-    CacheManager, // the logic behind cache machanism - ttl, fs, url resolving etc. 
-    CacheProvider, //context provider to be used by all CacheableImage components
-    createProviderValue, //function that creates the value to be assigned to CacheProvider
+    CacheManager, // the logic behind cache machanism - ttl, fs, url resolving etc.
 } = require('react-native-auto-cacheable-image');
 ```
 
@@ -189,28 +179,9 @@ It's main use is to hide the cache layer from the user and provide a simple way 
 * `activityIndicatorProps` - props for the `ActivityIndicator` or `loadingIndicator` that is shown while the image is downloaded.
 * `defaultSource` - prop to display a background image while the source image is downloaded. This will work even in android, but will not display background image if there you set borderRadius on this component style prop
 * `loadingIndicator` - _component_ prop to set custom `ActivityIndicator`.
-* `ignoreContext` - flag that indicates whether to ignore the context and use its own `CacheManager` instance in the `CacheableImage`.
+* `showLoader` - flag that indicates whether to display the `loadingIndicator`.
 * `fallbackSource` - prop to set placeholder image. When `source.uri` is null or cached failed, the `fallbackSource` will be display.
 * any of the [`CacheOptions`](#cacheoptions) props - customize the [`CacheManager`](#cachemanager) for this specific [`CacheableImage`](#cacheableimage) instance.
-
-### CacheProvider and createProviderValue
-`CacheProvider` provides context to be used by all CacheableImage components. `createProviderValue` is a function that should be used to create the value provided to `CacheProvider`.
-
-```jsx
-import {
-  CacheManager,
-  CacheProvider,
-  createProviderValue,
-} from 'react-native-auto-cacheable-image';
-const contextValue = createProviderValue(new CacheManager());
-const App = () => {
-  return (
-    <CacheProvider value={{ ...contextValue }}>
-      <MyAppRoot />
-    </CacheProvider>
-  );
-}
-```
 
 ## Some types
 ### CacheOptions
