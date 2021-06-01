@@ -14,7 +14,6 @@ import _ from "lodash";
 import { CacheManager, IsCacheable } from "./CacheManager";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { WrapperFS } from "../utils/fsUtils";
-import { CacheContext } from "./CacheContext";
 const defaultStyles = StyleSheet.create({
     image: {
         backgroundColor: "transparent"
