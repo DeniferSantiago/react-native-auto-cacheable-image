@@ -128,7 +128,7 @@ export class CacheManager {
             const filePath = getImageFilePath(cacheableUrl, copy.cacheLocation);
             // remove file from cache
             await MemoryCache.remove(cacheableUrl);
-            return await WrapperFS.deleteFile(filePath);
+            await WrapperFS.deleteFile(filePath);
         } catch (e) {
             throw e;
         }
@@ -139,7 +139,7 @@ export class CacheManager {
      */
     async clearCache() {
         await MemoryCache.flush();
-        return await WrapperFS.cleanDir(this.options.cacheLocation);
+        await WrapperFS.cleanDir(this.options.cacheLocation);
     }
     /**
      * @typedef {({ files: import("react-native-fs").StatResult[], size: Number})} CacheInfo

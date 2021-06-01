@@ -1,10 +1,4 @@
-import React, {
-    forwardRef,
-    useState,
-    useMemo,
-    useEffect,
-    useContext
-} from "react";
+import React, { forwardRef, useState, useMemo, useEffect } from "react";
 import {
     View,
     StyleSheet,
@@ -26,7 +20,8 @@ const defaultStyles = StyleSheet.create({
         backgroundColor: "transparent"
     },
     loader: {
-        backgroundColor: "transparent"
+        backgroundColor: "transparent",
+        ...StyleSheet.absoluteFillObject
     },
     loaderPlaceholder: {
         backgroundColor: "transparent",
@@ -77,7 +72,7 @@ const AddPathPrefix = path => `file://${path}`;
  * @property {ImageURISource} defaultSource prop to display a background image while the source image is downloaded. This will work even in android, but will not display background image if there you set borderRadius on this component style prop
  * @property {ImageURISource} fallbackSource prop to set placeholder image. when source.uri is null or cached failed, the fallbackSource will be display.
  * @property {String} cacheLocation
- * @property {Boolean} ignoreContext
+ * @property {Boolean} showLoader prop that specifies whether to display the loading indicator
  * @property {String[] | boolean} useQueryParamsInCacheKey string[]|boolean an array of keys to use from the source. uri query string or a bool value stating whether to use the entire query string or not. (default: false)
  * @property {ActivityIndicatorProps} activityIndicatorProps props for the ActivityIndicator that is shown while the image is downloaded.
  * @property {(props: ActivityIndicatorProps) => JSX.Element} loadingIndicator component prop to set custom ActivityIndicator
@@ -97,17 +92,11 @@ const CacheableImageComponent = (props, ref) => {
         return IsCacheable(props.source?.uri);
     });
     const managerOptions = getCacheManagerOptions(props);
-    const cacheContext = useContext(CacheContext);
     const [mOptions, setMOptions] = useState({
         ...defaultOptions,
         ...managerOptions
     });
-    const { ignoreContext } = props;
-    const cacheManager = useMemo(() => {
-        if (ignoreContext || !cacheContext.enabled)
-            return new CacheManager(mOptions);
-        else return cacheContext.manager;
-    }, [ignoreContext, cacheContext.enabled, cacheContext.manager, mOptions]);
+    const cacheManager = useMemo(() => new CacheManager(mOptions), [mOptions]);
     const { source: originSource } = props;
     useEffect(() => {
         const changed = !_.isEqual(
@@ -121,12 +110,7 @@ const CacheableImageComponent = (props, ref) => {
         const processSource = async source => {
             const url = source?.uri;
             try {
-                var cachedPath = url ? cacheContext?.getCached(url) : null;
-                if (!cachedPath) {
-                    cachedPath = await cacheManager.downloadAndCacheUrl(url);
-                    if (cacheContext.enabled)
-                        cacheContext?.setCached(url, cachedPath);
-                }
+                var cachedPath = await cacheManager.downloadAndCacheUrl(url);
                 if (isMounted) {
                     setCachedImagePath(cachedPath);
                     setLastFetched(url);
@@ -148,13 +132,7 @@ const CacheableImageComponent = (props, ref) => {
             isMounted = false;
             interaction.cancel();
         };
-    }, [
-        originSource,
-        isInternetReachable,
-        cacheContext,
-        cacheManager,
-        lastFetched
-    ]);
+    }, [originSource, isInternetReachable, cacheManager, lastFetched]);
     /**@param {ImageBackgroundProps} args*/
     const renderImage = args => {
         if (_.isFunction(props.renderImage)) {
@@ -169,7 +147,8 @@ const CacheableImageComponent = (props, ref) => {
             />
         );
     };
-    const renderLoader = () => {
+    /**@param {Boolean} showLoader */
+    const renderLoader = (showLoader = true) => {
         const imageStyle = [defaultStyles.loaderPlaceholder, props.style];
         const flattenStyle = StyleSheet.flatten(imageStyle);
         const activityIndicatorProps = _.omit(
@@ -190,24 +169,23 @@ const CacheableImageComponent = (props, ref) => {
         // if the imageStyle has borderRadius it will break the loading image view on android
         // so we only show the ActivityIndicator
         if (
-            !source ||
-            (Platform.OS === "android" && flattenStyle.borderRadius)
+            showLoader &&
+            (!source ||
+                (Platform.OS === "android" && flattenStyle.borderRadius))
         ) {
             return (
-                <View
-                    style={[
-                        imageStyle,
-                        LoadingIndicator && activityIndicatorStyle
-                    ]}>
+                <View style={imageStyle}>
+                    {props.children}
                     {LoadingIndicator ? (
-                        <LoadingIndicator {...activityIndicatorProps} />
+                        <View style={activityIndicatorStyle}>
+                            <LoadingIndicator {...activityIndicatorProps} />
+                        </View>
                     ) : (
                         <ActivityIndicator
                             {...activityIndicatorProps}
                             style={activityIndicatorStyle}
                         />
                     )}
-                    {props.children}
                 </View>
             );
         }
@@ -216,27 +194,27 @@ const CacheableImageComponent = (props, ref) => {
             ...imageProps,
             style: props.style,
             source,
-            children: (
-                <View
-                    style={[
-                        imageStyle,
-                        LoadingIndicator && activityIndicatorStyle
-                    ]}>
+            children: !showLoader ? (
+                props.children
+            ) : (
+                <View style={imageStyle}>
+                    {props.children}
                     {LoadingIndicator ? (
-                        <LoadingIndicator {...activityIndicatorProps} />
+                        <View style={activityIndicatorStyle}>
+                            <LoadingIndicator {...activityIndicatorProps} />
+                        </View>
                     ) : (
                         <ActivityIndicator
                             {...activityIndicatorProps}
                             style={activityIndicatorStyle}
                         />
                     )}
-                    {props.children}
                 </View>
             )
         });
     };
     if (isCacheable && !cachedImagePath && isInternetReachable) {
-        return renderLoader();
+        return renderLoader(props.showLoader);
     }
     const style = props.style ?? defaultStyles.image;
     const source =
